@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <meta name="theme-color" content="#c1652f">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Fuel Log 🍳</title>
 <style>
 /* ======================================================================
@@ -526,6 +529,35 @@ main{padding-top:16px;}
 <div class="toast" id="toast"></div>
 
 <script>
+/* ======================================================================
+   AUTO-UPDATE CHECK
+   Phones (especially "Add to Home Screen" bookmarks) can keep serving a
+   cached copy of this file even after a new version is pushed. On every
+   load, quietly ask the server (bypassing cache) whether a newer
+   APP_VERSION exists; if so, do one forced reload to fetch it. Fails
+   silently offline, so the app still works with zero network exactly
+   as before.
+   ====================================================================== */
+(function checkForUpdate(){
+  var APP_VERSION = "2026.08.14-1"; // bump this string on every meaningful change
+  window.__FUEL_LOG_APP_VERSION__ = APP_VERSION;
+  try{
+    if(sessionStorage.getItem("fuellog:seenVersion") === APP_VERSION) return;
+    fetch(location.pathname, { cache: "no-store" })
+      .then(function(r){ return r.text(); })
+      .then(function(html){
+        var m = html.match(/APP_VERSION\s*=\s*"([^"]+)"/);
+        if(m && m[1] !== APP_VERSION){
+          sessionStorage.setItem("fuellog:seenVersion", m[1]);
+          location.replace(location.pathname + "?_v=" + Date.now());
+        } else {
+          sessionStorage.setItem("fuellog:seenVersion", APP_VERSION);
+        }
+      })
+      .catch(function(){}); // offline or blocked — just continue with what's loaded
+  }catch(e){}
+})();
+
 (function(){
 "use strict";
 
