@@ -507,6 +507,12 @@ main{padding-top:16px;}
     <div class="sheet-title">Settings <button class="close-x" id="closeSettings">✕</button></div>
 
     <div class="settings-block">
+      <h4>🔧 Diagnostics</h4>
+      <div id="diagnosticsBox" style="background:var(--cream-2); border-radius:var(--radius-sm); padding:12px; font-size:0.78rem; line-height:1.6; font-family:ui-monospace, monospace; white-space:pre-wrap; word-break:break-all;"></div>
+      <button class="btn btn-ghost" id="copyDiagnosticsBtn" style="width:100%; margin-top:8px;">Copy diagnostics</button>
+    </div>
+
+    <div class="settings-block">
       <h4>📷 Google Photos album</h4>
       <div class="field" style="margin-bottom:8px;">
         <input type="text" id="albumUrlInput" placeholder="https://photos.app.goo.gl/...">
@@ -553,7 +559,7 @@ main{padding-top:16px;}
    as before.
    ====================================================================== */
 (function checkForUpdate(){
-  var APP_VERSION = "2026.08.14-2"; // bump this string on every meaningful change
+  var APP_VERSION = "2026.08.14-3"; // bump this string on every meaningful change
   window.__FUEL_LOG_APP_VERSION__ = APP_VERSION;
   try{
     if(sessionStorage.getItem("fuellog:seenVersion") === APP_VERSION) return;
@@ -1328,7 +1334,62 @@ const settingsOverlay = document.getElementById("settingsOverlay");
 document.getElementById("settingsBtn").addEventListener("click", ()=>{
   document.getElementById("albumUrlInput").value = albumUrl;
   renderRewardManageList();
+  renderDiagnostics();
   settingsOverlay.classList.add("open");
+});
+
+function detectBrowserContext(){
+  const ua = navigator.userAgent || "";
+  if(/CriOS/.test(ua)) return "Chrome for iOS";
+  if(/FxiOS/.test(ua)) return "Firefox for iOS";
+  if(/EdgiOS/.test(ua)) return "Edge for iOS";
+  if(/Version\/[\d.]+.*Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua)) return "Safari";
+  if(/Safari/.test(ua)) return "In-app browser (WKWebView, not Safari)";
+  return "Unknown — " + ua.slice(0,60);
+}
+
+function renderDiagnostics(){
+  const box = document.getElementById("diagnosticsBox");
+  const lines = [];
+
+  lines.push("URL: " + location.href);
+  lines.push("Browser: " + detectBrowserContext());
+  lines.push("Standalone (opened from Home Screen icon): " +
+    (typeof navigator.standalone === "boolean" ? (navigator.standalone ? "YES" : "NO") : "unknown (not iOS Safari)"));
+  lines.push("Referrer: " + (document.referrer || "(none — direct/standalone open)"));
+
+  let storageOk = false, storageErr = "";
+  try{
+    const testKey = "fuellog:diagnosticTest";
+    localStorage.setItem(testKey, "1");
+    storageOk = localStorage.getItem(testKey) === "1";
+    localStorage.removeItem(testKey);
+  }catch(e){ storageErr = e && e.message ? e.message : String(e); }
+  lines.push("localStorage writable: " + (storageOk ? "YES" : "NO — " + storageErr));
+
+  const dayKeys = Object.keys(entries).filter(k=>Object.keys(entries[k]||{}).length>0).sort();
+  lines.push("Days with logs on THIS device/browser: " + dayKeys.length);
+  if(dayKeys.length){
+    lines.push("  " + dayKeys.slice(-8).join(", "));
+  }
+  lines.push("Rewards claimed: " + rewards.filter(r=>r.claimed).length + "/" + rewards.length);
+
+  box.textContent = lines.join("\n");
+
+  if(navigator.storage && navigator.storage.estimate){
+    navigator.storage.estimate().then(est=>{
+      box.textContent += `\nStorage used: ~${Math.round((est.usage||0)/1024)} KB of ${Math.round((est.quota||0)/1024/1024)} MB quota`;
+    }).catch(()=>{});
+  }
+}
+
+document.getElementById("copyDiagnosticsBtn").addEventListener("click", ()=>{
+  const text = document.getElementById("diagnosticsBox").textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>showToast("Copied ✓")).catch(()=>showToast("Couldn't copy — select text manually"));
+  } else {
+    showToast("Copy not supported — select text manually");
+  }
 });
 document.getElementById("closeSettings").addEventListener("click", ()=>settingsOverlay.classList.remove("open"));
 settingsOverlay.addEventListener("click", (e)=>{ if(e.target===settingsOverlay) settingsOverlay.classList.remove("open"); });
