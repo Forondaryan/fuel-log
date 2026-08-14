@@ -20,21 +20,27 @@ your phone's browser `localStorage`.
 
 ## Getting it onto your phone
 
-Since it's one self-contained HTML file with no server, you have a few
-options — pick whichever is easiest for you:
+This is hosted at **https://forondaryan.github.io/fuel-log/** (GitHub
+Pages, pushed from this folder). For one-tap access, use a **Safari
+Bookmark or Favorite** — not "Add to Home Screen."
 
-- **iCloud Drive / Files app**: Drop `index.html` into an iCloud Drive
-  folder, open it from the Files app on your phone (opens in Safari),
-  then use Share → **Add to Home Screen** for a one-tap icon.
-- **AirDrop**: AirDrop the file to your phone, open with Safari, then
-  Add to Home Screen the same way.
-- **Any static host** (GitHub Pages, Netlify drop, etc.): if you'd
-  rather have a stable URL, drag the file onto Netlify Drop
-  (netlify.com/drop) or push this folder to a GitHub repo with Pages
-  enabled — either gives you a URL with zero backend/server to run.
+**Why not Add to Home Screen:** on iOS, an icon added that way can get
+launched by Safari in a fully isolated "standalone" storage context,
+completely separate from any regular Safari tab — confirmed on-device,
+even with every PWA-install signal (manifest.json, capability meta
+tags) stripped out of the page. iOS still decided to treat it as an
+installed app and gave it empty, disconnected storage. That's an Apple
+platform behavior, not something fixable from the page, so it's not
+worth the risk for something you need to trust daily.
 
-Once it's added to your home screen, it opens full-screen like a native
-app and works completely offline (nothing ever calls out to a server).
+**Instead:** open the site in Safari → tap the **Share** icon → **Add
+Bookmark** (saved in Bookmarks) or **Add to Favorites** (shows as a
+tile on Safari's new-tab/start screen — the closest thing to a home
+screen icon while guaranteeing it always opens as a normal Safari tab,
+sharing storage with every other Safari tab on the device).
+
+It still works completely offline once loaded (nothing calls out to a
+server beyond the one-time page fetch and an update check).
 
 ## Your data
 

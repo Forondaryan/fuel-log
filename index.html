@@ -8,13 +8,16 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 
-<!-- Deliberately NOT declaring apple-mobile-web-app-capable. Full
-     "standalone" mode on iOS can give the Home Screen icon its own
-     separate storage from Safari on some iOS versions, and also needs
-     safe-area handling for the status bar that isn't worth the risk
-     here. Keeping this as a plain bookmark with a custom icon means the
-     icon just opens real Safari — same tab, same storage, every time. -->
-<link rel="manifest" href="manifest.json">
+<!-- No manifest.json link, no apple-mobile-web-app-* capability tags.
+     Confirmed on-device: even with apple-mobile-web-app-capable removed
+     and manifest.json's display set to "browser", a freshly-recreated
+     Home Screen icon still launched standalone with its own isolated
+     storage, empty of everything logged in Safari. That's iOS deciding
+     an icon is "installable" on its own signals (a manifest + icons is
+     apparently enough) and giving it a separate storage box — not
+     something controllable from here. So: no manifest reference at all,
+     recommend a Safari Bookmark/Favorite instead of Add to Home Screen.
+     apple-touch-icon still gives it a proper icon either way. -->
 <meta name="apple-mobile-web-app-title" content="Fuel Log">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -564,7 +567,7 @@ main{padding-top:16px;}
    as before.
    ====================================================================== */
 (function checkForUpdate(){
-  var APP_VERSION = "2026.08.14-5"; // bump this string on every meaningful change
+  var APP_VERSION = "2026.08.14-6"; // bump this string on every meaningful change
   window.__FUEL_LOG_APP_VERSION__ = APP_VERSION;
   try{
     if(sessionStorage.getItem("fuellog:seenVersion") === APP_VERSION) return;
