@@ -7,6 +7,20 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
+
+<!-- Installable-app declarations: without these, "Add to Home Screen" on
+     iOS is ambiguous about whether the icon is a plain bookmark or a
+     standalone app, which is what caused logged data to seem to vanish
+     between the icon and Safari. These pin it to one consistent,
+     persistent, standalone context. -->
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fuel Log">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
 <title>Fuel Log 🍳</title>
 <style>
 /* ======================================================================
@@ -539,7 +553,7 @@ main{padding-top:16px;}
    as before.
    ====================================================================== */
 (function checkForUpdate(){
-  var APP_VERSION = "2026.08.14-1"; // bump this string on every meaningful change
+  var APP_VERSION = "2026.08.14-2"; // bump this string on every meaningful change
   window.__FUEL_LOG_APP_VERSION__ = APP_VERSION;
   try{
     if(sessionStorage.getItem("fuellog:seenVersion") === APP_VERSION) return;
