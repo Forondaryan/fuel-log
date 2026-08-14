@@ -8,15 +8,13 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 
-<!-- Installable-app declarations: without these, "Add to Home Screen" on
-     iOS is ambiguous about whether the icon is a plain bookmark or a
-     standalone app, which is what caused logged data to seem to vanish
-     between the icon and Safari. These pin it to one consistent,
-     persistent, standalone context. -->
+<!-- Deliberately NOT declaring apple-mobile-web-app-capable. Full
+     "standalone" mode on iOS can give the Home Screen icon its own
+     separate storage from Safari on some iOS versions, and also needs
+     safe-area handling for the status bar that isn't worth the risk
+     here. Keeping this as a plain bookmark with a custom icon means the
+     icon just opens real Safari — same tab, same storage, every time. -->
 <link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Fuel Log">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -67,7 +65,10 @@ a{color:inherit;}
 .header{
   background: linear-gradient(160deg, var(--amber) 0%, var(--tomato) 100%);
   color: #fff8ef;
-  padding: 14px 14px 20px;
+  /* defensive: if ever launched fullscreen (no browser chrome) on any
+     platform, keep header content clear of the status bar/notch rather
+     than letting it draw underneath */
+  padding: calc(14px + env(safe-area-inset-top)) 14px 20px;
   border-radius: 0 0 26px 26px;
   box-shadow: var(--shadow-lg);
   position: relative;
@@ -559,7 +560,7 @@ main{padding-top:16px;}
    as before.
    ====================================================================== */
 (function checkForUpdate(){
-  var APP_VERSION = "2026.08.14-3"; // bump this string on every meaningful change
+  var APP_VERSION = "2026.08.14-4"; // bump this string on every meaningful change
   window.__FUEL_LOG_APP_VERSION__ = APP_VERSION;
   try{
     if(sessionStorage.getItem("fuellog:seenVersion") === APP_VERSION) return;
