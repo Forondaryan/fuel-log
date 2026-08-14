@@ -79,8 +79,11 @@ a{color:inherit;}
   position:absolute; right:-30px; top:-30px;
   width:140px; height:140px; border-radius:50%;
   background: rgba(255,255,255,0.08);
+  pointer-events: none; /* purely decorative — must never intercept taps
+    on real content underneath it (this is what was silently blocking
+    the settings button: it sits in the same top-right corner) */
 }
-.header-top{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+.header-top{display:flex; align-items:center; justify-content:space-between; gap:8px; position:relative; z-index:1;}
 .brand{display:flex; align-items:center; gap:8px; font-weight:800; font-size:1.25rem; letter-spacing:-0.02em;}
 .brand .egg{font-size:1.5rem;}
 .iconbtn{
@@ -150,6 +153,7 @@ main{padding-top:16px;}
 .big-ring .pct{
   position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
   flex-direction:column; font-weight:800; font-size:1.05rem; color: var(--amber);
+  pointer-events: none; /* decorative overlay text — never block taps */
 }
 .big-ring .pct small{font-weight:600; font-size:0.6rem; color:var(--ink-soft);}
 .day-detail-meta{flex:1;}
@@ -257,7 +261,7 @@ main{padding-top:16px;}
 }
 .celebrate-emoji{font-size:3rem; animation: pop 0.5s ease;}
 @keyframes pop{0%{transform:scale(0.3) rotate(-10deg); opacity:0;} 60%{transform:scale(1.15) rotate(4deg);} 100%{transform:scale(1) rotate(0);}}
-.confetti{position:absolute; top:-10px; font-size:1.3rem; animation: fall linear forwards;}
+.confetti{position:absolute; top:-10px; font-size:1.3rem; animation: fall linear forwards; pointer-events: none;} /* falls over the claim button — must not block the tap */
 @keyframes fall{to{transform: translateY(340px) rotate(360deg); opacity:0;}}
 .celebrate-title{font-weight:800; font-size:1.3rem; margin:10px 0 4px;}
 .celebrate-sub{color:var(--ink-soft); font-size:0.9rem; margin-bottom:16px;}
@@ -560,7 +564,7 @@ main{padding-top:16px;}
    as before.
    ====================================================================== */
 (function checkForUpdate(){
-  var APP_VERSION = "2026.08.14-4"; // bump this string on every meaningful change
+  var APP_VERSION = "2026.08.14-5"; // bump this string on every meaningful change
   window.__FUEL_LOG_APP_VERSION__ = APP_VERSION;
   try{
     if(sessionStorage.getItem("fuellog:seenVersion") === APP_VERSION) return;
